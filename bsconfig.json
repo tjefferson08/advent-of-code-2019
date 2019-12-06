@@ -21,5 +21,8 @@
   "entries": [{
     "backend": "native",
     "main-module": "Demo"
+  }, {
+    "backend": "native",
+    "main-module": "Intcode"
   }]
 }
