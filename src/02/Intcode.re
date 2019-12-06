@@ -46,7 +46,6 @@ let execute_op = (program, pc) => {
     | _ => ()
   };
 
-  debug_result(result, pc, program);
   (result, pc + 4)
 };
 
@@ -67,6 +66,34 @@ let rec run = (program, pc) => {
 /* run(p3, 0); */
 /* run(p4, 0); */
 /* run(p5, 0); */
-program[1] = 12;
-program[2] = 2;
-run(program, 0);
+
+let try_inputs = (input1, input2) => {
+  let new_program = Array.copy(program)
+  new_program[1] = input1;
+  new_program[2] = input2;
+  run(new_program, 0);
+  new_program[0]
+}
+
+
+let target = 19690720;
+
+exception InvalidProgram;
+
+let rec search = (i1, i2) => {
+  let result = try_inputs(i1, i2);
+  if (result == target) {
+    (i1, i2)
+  } else {
+    if (i1 < 99) {
+      search(i1 + 1, i2)
+    } else if (i2 < 99) {
+      search(0, i2 + 1)
+    } else {
+      raise(InvalidProgram)
+    }
+  }
+}
+
+let (noun, verb) = search(0, 0);
+print_endline(string_of_int(noun) ++ ", " ++ string_of_int(verb) ++ ", " ++ string_of_int(noun * 100 + verb));
