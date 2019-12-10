@@ -24,5 +24,9 @@
   }, {
     "backend": "native",
     "main-module": "Intcode"
-  }]
+  },{
+    "backend": "native",
+    "main-module": "Wires"
+  }
+             ]
 }
