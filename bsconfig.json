@@ -27,6 +27,9 @@
   },{
     "backend": "native",
     "main-module": "Wires"
+  },{
+    "backend": "native",
+    "main-module": "SecureContainer"
   }
              ]
 }
