@@ -30,6 +30,9 @@
   },{
     "backend": "native",
     "main-module": "SecureContainer"
+  },{
+    "backend": "native",
+    "main-module": "Intcode2"
   }
              ]
 }
