@@ -17,6 +17,9 @@ type parameter =
 type operation =
   | Addition(parameter_mode, parameter_mode, parameter_mode)
   | Multiplication(parameter_mode, parameter_mode, parameter_mode)
+  | JumpIfTrue(parameter_mode, parameter_mode)
+  | JumpIfFalse(parameter_mode, parameter_mode)
+  | LessThan(parameter_mode, parameter_mode, parameter_mode)
   | StoreInput
   | OutputStoredValue(parameter_mode)
   | HaltOp;
@@ -43,6 +46,9 @@ let operation_of_raw_opcode = (opcode) => {
   | 2 => Multiplication(param_mode_1, param_mode_2, param_mode_3)
   | 3 => StoreInput
   | 4 => OutputStoredValue(param_mode_1)
+  | 5 => JumpIfTrue(param_mode_1, param_mode_2)
+  | 6 => JumpIfFalse(param_mode_1, param_mode_2)
+  | 7 => LessThan(param_mode_1, param_mode_2, param_mode_3)
   | 99 => HaltOp
   | opcode => raise(UnsupportedOperation(opcode))
   };
@@ -64,6 +70,8 @@ let execute_op = (program, pc) => {
   let result = switch(operation) {
     | Addition(pm1, pm2, _pm3) => partial_access(1, pm1) + partial_access(2, pm2)
     | Multiplication(pm1, pm2, _pm3) => partial_access(1, pm1) * partial_access(2, pm2)
+    | JumpIfTrue(_, pm2) => partial_access(2, pm2)  // value/address of new PC
+    | JumpIfFalse(_, pm2) => partial_access(2, pm2) // value/address of new PC
     | StoreInput => partial_access(1, ImmediateMode) // address to store stdin value
     | OutputStoredValue(pm1) => partial_access(1, pm1) // value/address (depending on mode) to send to stdout
     | _ => 0
@@ -86,6 +94,8 @@ let execute_op = (program, pc) => {
   let new_pc = switch(operation) {
     | Addition(_) => pc + 4
     | Multiplication(_) => pc + 4
+    | JumpIfTrue(pm1, _) => partial_access(1, pm1) == 0 ? pc + 3 : result
+    | JumpIfFalse(pm1, _) => partial_access(1, pm1) == 0 ? result : pc + 3
     | StoreInput => pc + 2
     | OutputStoredValue(_) => pc + 2
     | HaltOp => pc
@@ -101,8 +111,10 @@ let execute_op = (program, pc) => {
 /* let p = [|1,0,0,0,99|]; */
 /* let p = [| 1002,4,3,4,99,33 |]; */
 /* let p = [|3,0,4,0,99|]; */
+let p = [|3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9|];
 
-let p = program;
+/* let p = [|3,3,1105,-1,9,1101,0,0,12,4,12,99,1 |] */
+/* let p = program; */
 
 let rec run = (program, pc) => {
   switch (execute_op(program, pc)) {
@@ -123,38 +135,6 @@ let rec run = (program, pc) => {
 run(p, 0);
 debug("resulting data:");
 print_all(p);
-/* run(p2, 0); */
-/* run(p3, 0); */
-/* run(p4, 0); */
-/* run(p5, 0); */
-
-/* let try_inputs = (input1, input2) => { */
-/*   let new_program = Array.copy(program) */
-/*   new_program[1] = input1; */
-/*   new_program[2] = input2; */
-/*   run(new_program, 0); */
-/*   new_program[0] */
-/* } */
-
-
-/* let target = 19690720; */
-
-/* exception InvalidProgram; */
-
-/* let rec search = (i1, i2) => { */
-/*   let result = try_inputs(i1, i2); */
-/*   if (result == target) { */
-/*     (i1, i2) */
-/*   } else { */
-/*     if (i1 < 99) { */
-/*       search(i1 + 1, i2) */
-/*     } else if (i2 < 99) { */
-/*       search(0, i2 + 1) */
-/*     } else { */
-/*       raise(InvalidProgram) */
-/*     } */
-/*   } */
-/* } */
 
 /* let (noun, verb) = search(0, 0); */
 /* debug(string_of_int(noun) ++ ", " ++ string_of_int(verb) ++ ", " ++ string_of_int(noun * 100 + verb)); */
