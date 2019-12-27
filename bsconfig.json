@@ -36,6 +36,9 @@
   },{
     "backend": "native",
     "main-module": "Orbit"
+  },{
+    "backend": "native",
+    "main-module": "Permute"
   }
              ]
 }
