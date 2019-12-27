@@ -33,6 +33,9 @@
   },{
     "backend": "native",
     "main-module": "Intcode2"
+  },{
+    "backend": "native",
+    "main-module": "Orbit"
   }
              ]
 }
